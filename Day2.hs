@@ -1,5 +1,6 @@
 import Util (readDay)
 import Data.List
+import GHC.Base
 
 main = do
     contents <- readDay 2
@@ -15,26 +16,13 @@ part2 contents = do
         x = map variants rows
     sum (map ((fromEnum . or) . map safe) x)
 
-increasing :: [Int] -> Bool
-increasing [] = True
-increasing [x] = True
-increasing (x:y:xs) = y > x && increasing (y:xs)
+increasing xs = fst $ foldl (\(acc, y) x -> (acc && x > y, x)) (True, minInt) xs
+decreasing xs = fst $ foldl (\(acc, y) x -> (acc && x < y, x)) (True, maxInt) xs
+close xs = fst $ foldl
+    (\(acc, y) x -> let d = abs(x - y) in (acc && d <= 3 && d >= 1, x))
+    (True, head xs + 1) xs
 
-decreasing :: [Int] -> Bool
-decreasing [] = True
-decreasing [x] = True
-decreasing (x:y:xs) = y < x && decreasing (y:xs)
-
-close :: [Int] -> Bool
-close [] = True
-close [x] = True
-close (x:y:xs) = (abs (x-y) <= 3 && abs (x-y) >= 1) && close (y:xs)
-
-logic :: Bool -> Bool -> Bool -> Bool
-logic x y z = (x && z) || (y && z)
-
-safe :: [Int] -> Bool
-safe x = logic (increasing x) (decreasing x) (close x)
+safe x = close x && (increasing x || decreasing x)
 
 variants :: [Int] -> [[Int]]
 variants [] = []
