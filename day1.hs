@@ -1,46 +1,37 @@
-import System.IO  
-import Control.Monad
+module Day1 (part1, part2) where
+
 import Data.List
+import System.IO
 
-main = do  
-        let list = []
-        handle <- openFile "day1.txt" ReadMode
-        contents <- hGetContents handle
-        let singlewords = words contents
-            list = f singlewords
-        let odds = sort (oddInd list)
-        let evens = sort (evenInd list)
-        let diff = diffs odds evens
-        -- Day 1
-        print (mysum diff)
-        -- Day 2
-        print (mysum (prod odds evens))
+main = withFile "day1.txt" ReadMode $ \handle -> do
+    contents <- hGetContents handle
+    print $ part1 contents
+    print $ part2 contents
 
-        hClose handle
+part1 contents = do
+    let list = map read $ words contents
+        odds = sort (oddInd list)
+        evens = sort (evenInd list)
+        diff = diffs evens odds
+
+    sum diff
+
+part2 contents = do
+    let list = map read $ words contents
+        odds = sort (oddInd list)
+        evens = sort (evenInd list)
+
+    sum (prod odds evens)
 
 f :: [String] -> [Int]
 f = map read
 
-oddInd :: [Int] -> [Int]
-oddInd [] = []
-oddInd (x:y:xs) = x:oddInd xs
+oddInd xs = [ x | (x, i) <- zip xs [1..length xs], odd i ]
+evenInd xs = [ x | (x, i) <- zip xs [1..length xs], even i ]
+diffs = zipWith (\ x y -> abs (x - y))
 
-evenInd :: [Int] -> [Int]
-evenInd [] = []
-evenInd (x:y:xs) = y:evenInd xs
-
-diffs :: [Int] -> [Int] -> [Int]
-diffs [] [] = []
-diffs (x:xs) (y:ys) = abs(x-y):diffs xs ys
-
-mysum :: [Int] -> Int
-mysum [] = 0
-mysum (x:xs) = x + mysum xs
-
-occurrences :: Int -> [Int] -> Int
-occurrences x [] = 0
-occurrences x (y:xs)=  if x == y then 1 + occurrences x xs else occurrences x xs
+occurrences :: Eq a => a -> [a] -> Int
+occurrences x xs = length $ filter (x ==) xs
 
 prod :: [Int] -> [Int] -> [Int]
-prod [] l = []
-prod (x:xs) l = x*(occurrences x l) : prod xs l
+prod xs l = map (\ x -> x * occurrences x l) xs
