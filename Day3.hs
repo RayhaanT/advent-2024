@@ -21,10 +21,9 @@ match part2 s@(f:rest)
     | part2 && "don't()" `isPrefixOf` s = case findSublistIndex "do()" rest of
         Just ind -> match part2 $ drop ind s
         Nothing -> []
-    | "mul(" `isPrefixOf` s = case parseMul $ drop 4 s of
-        Just p -> p:match part2 rest
-        Nothing -> match part2 rest
+    | "mul(" `isPrefixOf` s = maybe mrest (: mrest) $ parseMul $ drop 4 s
     | otherwise = match part2 rest
+    where mrest = match part2 rest
 
 parseMul :: String -> Maybe (Int, Int)
 parseMul s
