@@ -1,4 +1,4 @@
-module Util (readDay, mapPair, stringSplit) where
+module Util (readDay, mapPair, stringSplit, printGrid, printList) where
 
 import System.IO
 import Data.Bifunctor
@@ -13,3 +13,9 @@ stringSplit p s = case dropWhile p s of
                     "" -> []
                     s' -> w : stringSplit p rest
                         where (w, rest) = break p s'
+
+printGrid :: [String] -> IO ()
+printGrid = mapM_ putStrLn
+
+printList :: (Show a) => [a] -> IO ()
+printList = mapM_ print
