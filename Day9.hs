@@ -10,8 +10,6 @@ main = do
         ordered = fsFile nums
         indexed = zipWith (\(x,y) z -> (x,y,z)) nums $ indices nums
         l = length $ reorderBlocks indexed
-    -- print indexed
-    -- print $ reorderBlocks indexed
     print $ checksum ordered
     print $ checksum $ flattenBlocks $ reorderBlocks indexed
 
@@ -53,7 +51,8 @@ fillSpace f [] = (f, [])
 fillSpace tri@(sz, id, ind) es@((s, _, i):rest)
   -- Nothing happens if we're past the file's current position
   | ind <= i = (tri, es)
-  -- Remove last empty cell in rest if the unit was reordered
+  -- Put in a space for where the unit was pulled out so checksum is padded correctly
+  -- Don't need to compact because the space is too deep for any future fills to use
   | sz == s = ((sz, id, i), sortBy cmpLast $ (sz, 0, ind) : rest)
   | sz < s = ((sz, id, i), (s-sz, 0, i+sz): sortBy cmpLast ((sz, 0, ind) : rest))
   | otherwise = (\(a, b) -> (a, (s, 0, i):b)) $ fillSpace tri rest
