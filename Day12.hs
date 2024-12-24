@@ -1,8 +1,6 @@
 import Util
 import Data.List
 import qualified Data.Set as S
-import qualified Data.Map as M
-import Data.Maybe
 import Debug.Trace
 
 main = do
@@ -12,7 +10,6 @@ main = do
     print $ bfsAll grid
     print $ allSides grid
 
-bfsAll :: [String] -> Int
 bfsAll g = fst $ foldl (\(n, s) p -> (\(a,b,c)->(n+length a*b,c)) $ bfs g s p) (0, S.empty) g'
     where g' = [(x,y) | x <- [0..length (head g)-1], y <- [0..length g-1]]
 
@@ -35,7 +32,6 @@ allSides :: [String] -> Int
 allSides g = fst $ foldl (\(n, s) p -> (\(a,_,c)->(n+nsides a*length a,c)) $ bfs g s p) (0, S.empty) g'
     where g' = [(x,y) | x <- [0..length (head g)-1], y <- [0..length g-1]]
 
-nsides :: [(Int, Int)] -> Int
 nsides [] = 0
 nsides [a] = 4
 nsides ps = sum (map (corners ps) ps)
